@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>___Darby Cobbs Watershed Viewer</title>
+    <title>--Darby Cobbs Watershed Viewer</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -14,7 +14,8 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="js/hovermap.js"></script>
     <script>
-        var map = L.map('map').setView([39.957, -75.272], 12);
+        // Disable double-click zoom by setting doubleClickZoom to false
+        var map = L.map('map', { doubleClickZoom: false }).setView([39.957, -75.272], 12);
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,

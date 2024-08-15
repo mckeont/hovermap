@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>_Darby Cobbs Watershed Viewer</title>
+    <title>__Darby Cobbs Watershed Viewer</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -21,7 +21,7 @@
             attribution: '&copy; <a href="https://www.esri.com/">Esri</a>, Maxar, Earthstar Geographics, and the GIS User Community'
         }).addTo(map);
 
-        var lastClickedLayer = null; 
+        var lastClickedLayer = null; // Variable to keep track of the last clicked layer
 
         var geojsonLayer = L.geoJSON(hovermap, {
             style: function () {
@@ -34,31 +34,59 @@
             },
             onEachFeature: function (feature, layer) {
                 layer.on({
-                    click: function (e) {
-                        if (lastClickedLayer) {
-                            // Reset the style of the previously clicked layer
-                            geojsonLayer.resetStyle(lastClickedLayer);
+                    mouseover: function (e) {
+                        highlightFeature(e);
+                    },
+                    mouseout: function (e) {
+                        if (e.target !== lastClickedLayer) {
+                            geojsonLayer.resetStyle(e.target);
                         }
-                        // Highlight the newly clicked layer
-                        lastClickedLayer = layer;
-                        layer.setStyle({
-                            fillColor: "blue",
-                            fillOpacity: 0.5
-                        });
-                        // Bring to front for better visibility
-                        layer.bringToFront();
-                        // Bind and open a tooltip with feature's property
-                        layer.bindTooltip(feature.properties.MUNICIPAL1, {permanent: false}).openTooltip();
+                    },
+                    click: function (e) {
+                        handleFeatureClick(e);
+                    },
+                    touchend: function (e) { // Handle touchend for mobile
+                        handleFeatureClick(e);
                     }
                 });
             }
         }).addTo(map);
 
-        map.on('click', function (e) {
-            // Reset style when clicked on the map and not on any feature
-            if (lastClickedLayer && !e.originalEvent._leaflet_id) {
+        function handleFeatureClick(e) {
+            if (lastClickedLayer && lastClickedLayer !== e.target) {
                 geojsonLayer.resetStyle(lastClickedLayer);
-                lastClickedLayer = null;
+            }
+            highlightFeature(e);
+            lastClickedLayer = e.target; // Update last clicked layer
+        }
+
+        function highlightFeature(e) {
+            var layer = e.target;
+            layer.setStyle({
+                fillColor: "blue",
+                fillOpacity: 0.5
+            });
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.bringToFront();
+            }
+            layer.bindTooltip(layer.feature.properties.MUNICIPAL1).openTooltip();
+        }
+
+        map.on('click', function (e) {
+            if (!e.originalEvent._leaflet) {
+                if (lastClickedLayer) {
+                    geojsonLayer.resetStyle(lastClickedLayer);
+                    lastClickedLayer = null;
+                }
+            }
+        });
+
+        map.on('touchend', function (e) { // Add touchend event on the map for mobile
+            if (!e.originalEvent._leaflet) {
+                if (lastClickedLayer) {
+                    geojsonLayer.resetStyle(lastClickedLayer);
+                    lastClickedLayer = null;
+                }
             }
         });
     </script>

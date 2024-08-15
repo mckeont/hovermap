@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>--Darby Cobbs Watershed Viewer</title>
+    <title>_--Darby Cobbs Watershed Viewer</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -14,8 +14,7 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="js/hovermap.js"></script>
     <script>
-        // Disable double-click zoom by setting doubleClickZoom to false
-        var map = L.map('map', { doubleClickZoom: false }).setView([39.957, -75.272], 12);
+        var map = L.map('map').setView([39.957, -75.272], 12);
 
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             maxZoom: 18,
@@ -43,17 +42,14 @@
                             geojsonLayer.resetStyle(e.target);
                         }
                     },
-                    click: function (e) {
-                        // Handle single click if needed
-                    },
-                    dblclick: function (e) { // Handle double-click for highlighting
-                        handleFeatureDblClick(e);
+                    click: function (e) { // Handle single click for highlighting
+                        handleFeatureClick(e);
                     }
                 });
             }
         }).addTo(map);
 
-        function handleFeatureDblClick(e) {
+        function handleFeatureClick(e) {
             if (lastClickedLayer && lastClickedLayer !== e.target) {
                 geojsonLayer.resetStyle(lastClickedLayer);
             }
@@ -73,10 +69,12 @@
             layer.bindTooltip(layer.feature.properties.MUNICIPAL1).openTooltip();
         }
 
-        map.on('dblclick', function (e) { // Handle double-click on the map for reset
-            if (lastClickedLayer) {
-                geojsonLayer.resetStyle(lastClickedLayer);
-                lastClickedLayer = null;
+        map.on('click', function (e) { // Handle click on the map for reset
+            if (!e.originalEvent._leaflet) {
+                if (lastClickedLayer) {
+                    geojsonLayer.resetStyle(lastClickedLayer);
+                    lastClickedLayer = null;
+                }
             }
         });
     </script>

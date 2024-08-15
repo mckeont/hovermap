@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>__Darby Cobbs Watershed Viewer</title>
+    <title>Darby Cobbs Watershed Viewer</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -43,16 +43,16 @@
                         }
                     },
                     click: function (e) {
-                        handleFeatureClick(e);
+                        // Handle single click if needed
                     },
-                    touchend: function (e) { // Handle touchend for mobile
-                        handleFeatureClick(e);
+                    dblclick: function (e) { // Handle double-click for highlighting
+                        handleFeatureDblClick(e);
                     }
                 });
             }
         }).addTo(map);
 
-        function handleFeatureClick(e) {
+        function handleFeatureDblClick(e) {
             if (lastClickedLayer && lastClickedLayer !== e.target) {
                 geojsonLayer.resetStyle(lastClickedLayer);
             }
@@ -72,21 +72,10 @@
             layer.bindTooltip(layer.feature.properties.MUNICIPAL1).openTooltip();
         }
 
-        map.on('click', function (e) {
-            if (!e.originalEvent._leaflet) {
-                if (lastClickedLayer) {
-                    geojsonLayer.resetStyle(lastClickedLayer);
-                    lastClickedLayer = null;
-                }
-            }
-        });
-
-        map.on('touchend', function (e) { // Add touchend event on the map for mobile
-            if (!e.originalEvent._leaflet) {
-                if (lastClickedLayer) {
-                    geojsonLayer.resetStyle(lastClickedLayer);
-                    lastClickedLayer = null;
-                }
+        map.on('dblclick', function (e) { // Handle double-click on the map for reset
+            if (lastClickedLayer) {
+                geojsonLayer.resetStyle(lastClickedLayer);
+                lastClickedLayer = null;
             }
         });
     </script>

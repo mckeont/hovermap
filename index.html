@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Leaflet Map with Hover Feature</title>
+    <title>Leaflet Map with Hover and Click Feature</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -31,8 +31,27 @@
                 };
             },
             onEachFeature: function (feature, layer) {
-                layer.on('mouseover', function () {
-                    layer.bindTooltip(feature.properties.MUNICIPAL1).openTooltip();
+                // Add mouseover and mouseout events for desktop, click for mobile
+                layer.on({
+                    mouseover: function (e) {
+                        var layer = e.target;
+                        layer.setStyle({
+                            fillColor: "blue",
+                            fillOpacity: 0.5
+                        });
+                        layer.bindTooltip(feature.properties.MUNICIPAL1).openTooltip();
+                    },
+                    mouseout: function (e) {
+                        L.geoJSON(hovermap).resetStyle(e.target);
+                    },
+                    click: function (e) {
+                        var layer = e.target;
+                        layer.setStyle({
+                            fillColor: "blue",
+                            fillOpacity: 0.5
+                        });
+                        layer.bindTooltip(feature.properties.MUNICIPAL1).openTooltip();
+                    }
                 });
             }
         }).addTo(map);
